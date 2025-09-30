@@ -1,9 +1,9 @@
 # An optimal transport-based low-dimensional visualization framework for high-parameter flow cytometry
 
 ## Overview
-This paper provides a comprehensive framework for analyzing and visualizing high-parameter flow cytometry data, and demonstrates the methodology using a **Malignant Peritoneal Mesothelioma (MPM) immunotherapy dataset**. The main dataset consists of PBMC samples collected from 14 patients at three time points: baseline (before vaccination), after the first vaccine, and after the third vaccine. The dataset was collected under six panels, of which three T-cell panels (Co-inhibition, Co-stimulation, Cytokine) are the primary focus of analysis in this paper.
+This paper provides a comprehensive framework for analyzing and visualizing high-parameter flow cytometry data, and demonstrates the methodology using a **Malignant Peritoneal Mesothelioma (MPM) immunotherapy dataset**, primarily. The main dataset consists of PBMC samples collected from 14 patients at three time points: baseline (before vaccination), after the first vaccine, and after the third vaccine. The dataset was collected under six panels, of which three T-cell panels (Co-inhibition, Co-stimulation, Cytokine) are the primary focus of analysis in this paper.
 
-The paper implements a **low-dimensional visualization framework based on optimal transport (Sinkhorn distance) and Graph Edit Distance (GED)**, enabling comparative analysis of samples over time and correlation with patient outcomes (OS, PFS, and response to therapy).  
+The paper implements a **low-dimensional visualization framework based on optimal transport (Sinkhorn distance) and Graph Edit Distance (GED)**, enabling comparative analysis of samples over time and correlation with patient outcomes.  
 
 ---
 
@@ -13,8 +13,8 @@ The data files are available [here](https://drive.google.com/file/d/1YHeYZlL0vsV
 
 ### 1. Raw Data (`FlowSink/Data/Raw Data`)
 - The primary data in `.fcs` format are provided by the original study authors. 
-- The `.fcs` files are preprocessed in R using Bioconductor packages (`PeacoQC`, `flowCore`, `CytoNorm2.0`) for margin event removal, compensation, transformation, scaling, and quality control. `.fcs` files are stored after every step of the preprocessing pipeline.
-- Important metadata files (`_cell_type.xlsx`) are stored in each panel subfolder under `Normalized Data`:
+- The `.fcs` files are preprocessed in R using several Bioconductor packages (`PeacoQC`, `flowCore`, `CytoNorm2.0`) for margin event removal, compensation, transformation, scaling, and quality control. The `.fcs` files are stored after every step of the preprocessing pipeline.
+- Important metadata files (`_cell_type.xlsx`) are stored in each panel subfolder under `Normalized Data`, that contain:
   - **Channel:** Marker-fluorochrome mapping.
   - **Phenotype:** Targeted cell population definitions for semi-automated cell assignment.
   - **Marker_threshold:** Expert-curated gating thresholds.
@@ -34,20 +34,22 @@ The data files are available [here](https://drive.google.com/file/d/1YHeYZlL0vsV
 - Files are stored as `.xlsx` in separate folders for the three T-cell panels (`Co-inhibition`, `Co-stimulation`, `Cytokine`) and for three time points (`TP1`, `TP2`, `TP3`).
 
 ### 3. Metadata
-- `metadata.xlsx` contains the mapping of original and renamed files, and patient clinical outcomes (OS, PFS, response).
+- `metadata.xlsx` contains the mapping of original and renamed files, and patient clinical outcomes (Overall Survival and Progression-Free Survival).
 - OS and PFS values are provided in months.
+
+The data folders has their own detailed README files.
 
 ---
 
 ## Code Organization
 
 ### 1. Preprocessing 
-- Preprocessing pipeline for original `.fcs` files:
+- Preprocessing pipeline for original the `.fcs` files:
   1. Rename raw `.fcs` files and organize by time point. (`RenameFCSFiles.R`)
-  2. Margin event removal, compensation, transformation, scaling, QC. (`PeacoQC.R`, `MPM…Panel.R`)
+  2. Margin event removal, compensation, transformation, scaling, QC. (`PeacoQC.R`, `MPM...Panel.R`)
   3. Lymphocyte gating and merging of gated `.fcs` files. (`MPMGate1Merge.R`)
   4. Two-step normalization (cell type markers, then cell state markers). (`MPMTcellNormalize.R`, `MPMTcellNormalize_2.R`)
-  5. Cell type assignment (semi-automated). (`MPM…CellAssign.R`)  
+  5. Cell type assignment (semi-automated). (`MPM...CellAssign.R`)  
 
 *Note:* The preprocessed `.xlsx` files provided can be used directly; re-running preprocessing is generally unnecessary.
 
@@ -57,20 +59,21 @@ The `MPM...ComparePlot.R` scripts can be used as the main demonstration code.
 - **Panel-specific workflows:** Separate folders for `CoInhibition`, `CoStimulation`, `Cytokine`.
 - **Core utilities:** `MPMUtilities.R` (shared computational functions), `MPMMarkerChannelMap.R` (marker-fluorochrome mapping), and result summarization scripts (`MPMDimRedExample.R`, `MPMTcellGEDDistribution.R`).
 - **Analysis workflow:**
-  1. Compute Sinkhorn distance matrices for each sample (Python via R interface: `TestOTSinkhorn.py`).
-  2. Construct filtered phenotype graphs and compute GED between samples.
-  3. Visualize single-sample graphs and comparative graphs across time points.
-  4. Generate low-dimensional MDS visualizations and correlate GED with clinical outcomes (OS, PFS, response).
+  1. Compute Sinkhorn distance matrices for each cell population in a sample (Python via R interface: `TestOTSinkhorn.py`).
+  2. Construct filtered phenotype graphs, visualize single-sample graphs and comparative graphs across time points.  
+  3. Compute GED between samples (Python via R interface: `TestGED.py`) and correlate GED with clinical outcomes (OS and PFS).
 
-*Note:* Python environment setup is required for Sinkhorn and GED computations. Python scripts `TestOTSinkhorn.py` and `TestGED.py` are called from R.
+*Note:* Python environment setup is required for Sinkhorn and GED computations (via R reticulate). Python scripts `TestOTSinkhorn.py` and `TestGED.py` are called from R.
+
+The code folder also has its own detailed README file.
 
 ---
 
 ## Key Outputs
-- **Filtered Graphs:** Single-sample and comparative graphs per panel and time point.
+- **Filtered Graphs:** Single-sample and comparative graphs per patient and time point.
 - **GED Matrices:** Pairwise Graph Edit Distances between samples across time points.
 - **MDS Plots:** Low-dimensional embeddings of samples based on GED.
-- **Survival Analysis:** Visualizations correlating GED with patient response, OS, and PFS.
+- **Survival Analysis:** Visualizations correlating GED with patient response (OS, and PFS).
 
 ---
 
