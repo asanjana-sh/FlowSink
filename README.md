@@ -9,7 +9,7 @@ The paper implements a **low-dimensional visualization framework based on optima
 
 ## Data Details
 
-The data files are available [here](https://drive.google.com/file/d/1YHeYZlL0vsViHzcQzffB1q7HxTgDtr-0/view?usp=sharing). Downloading the zip folder and extracting it under the `FlowSink/` directory should work with the relative paths in the code files.
+The data files are available [here](https://doi.org/10.5281/zenodo.17279841). Downloading the zip folder and extracting it under the `FlowSink/` directory should work with the relative paths in the code files.
 
 ### 1. Raw Data (`FlowSink/Data/Raw Data`)
 - The primary data in `.fcs` format are provided by the original study authors. 
