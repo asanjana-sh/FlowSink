@@ -87,6 +87,13 @@ sink_file_3 = paste0(folder_path, "/", folder_name_3, "/Sink_", strsplit(file_na
 sinkhorn_distance_matrix_3 = as.matrix(read.xlsx(sink_file_3, sheet = "Sheet 1", rowNames=FALSE))
 
 
+#### Normalizing the Sinkhorn distance matrices
+#### L1 normalization is used here; other normalization methods can also be adapted if necessary
+sinkhorn_distance_matrix_1 = sinkhorn_distance_matrix_1/ sum(abs(sinkhorn_distance_matrix_1))
+sinkhorn_distance_matrix_2 = sinkhorn_distance_matrix_2/ sum(abs(sinkhorn_distance_matrix_2))
+sinkhorn_distance_matrix_3 = sinkhorn_distance_matrix_3/ sum(abs(sinkhorn_distance_matrix_3))
+
+
 pheno_layout_1 = add_size_column(sample_1, pheno_layout)
 graph_1 = visualizeFilteredGraph(sinkhorn_distance_matrix_1, 
                                  sample_1, 
@@ -170,9 +177,12 @@ vsizes1 = data.frame(id=vertices_1$id, size=vertices_1$size)
 vsizes2 = data.frame(id=vertices_2$id, size=vertices_2$size)
 vsizes3 = data.frame(id=vertices_3$id, size=vertices_3$size)
 
-ged12 = sum(abs(vsizes1$size - vsizes2$size)) + sum(abs(el1$weight - el2$weight))
-ged23 = sum(abs(vsizes2$size - vsizes3$size)) + sum(abs(el2$weight - el3$weight))
-ged13 = sum(abs(vsizes1$size - vsizes3$size)) + sum(abs(el1$weight - el3$weight))
+vertex_weight = 1
+edge_weight = 1
+
+ged12 = vertex_weight*sum(abs(vsizes1$size - vsizes2$size)) + edge_weight*sum(abs(el1$weight - el2$weight))
+ged23 = vertex_weight*sum(abs(vsizes2$size - vsizes3$size)) + edge_weight*sum(abs(el2$weight - el3$weight))
+ged13 = vertex_weight*sum(abs(vsizes1$size - vsizes3$size)) + edge_weight*sum(abs(el1$weight - el3$weight))
 ged = rbind(ged, c(ged12, ged23, ged13))
 
 
